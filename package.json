@@ -1,0 +1,16 @@
+{
+  "name": "blessing-reminder-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot that sends hourly spiritual reminders for 40 days",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "node-cron": "^4.2.1",
+    "node-telegram-bot-api": "^0.67.0"
+  }
+}
