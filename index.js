@@ -83,9 +83,21 @@ if (TEST_MODE) {
     sendReminder();
   });
 
+  // Bismillah 40x reminder — 5 times daily at 08:00, 13:00, 17:00, 19:00, 21:00 WIB (UTC+7)
+  const bismillahJob = cron.schedule('0 1,6,10,12,14 * * *', () => {
+    if (!CHAT_ID) return;
+    const now = new Date();
+    if (now > END_DATE) return;
+    console.log(`[${now.toISOString()}] Sending Bismillah reminder`);
+    bot.sendMessage(CHAT_ID, 'Stop what you are doing. Say "Bismillah ir-Rahman ir-Rahim" 40 times. Right now. No rush — let each one settle in your heart.').catch(err => {
+      console.error(`[${now.toISOString()}] Failed to send Bismillah reminder:`, err.message);
+    });
+  });
+
   console.log('Blessing Reminder Bot started!');
   console.log(`Messages: ${messages.length}`);
   console.log(`End date: ${END_DATE.toISOString()}`);
   console.log(`Chat ID: ${CHAT_ID || '(not set — send /start to bot)'}`);
   console.log('Sending reminders every 30 minutes.');
+  console.log('Bismillah 40x reminders at 08:00, 13:00, 17:00, 19:00, 21:00 WIB.');
 }
