@@ -83,8 +83,8 @@ if (TEST_MODE) {
     sendReminder();
   });
 
-  // Bismillah 40x reminder — 5 times daily at 08:00, 13:00, 17:00, 19:00, 21:00 WIB (UTC+7)
-  const bismillahJob = cron.schedule('0 1,6,10,12,14 * * *', () => {
+  // Bismillah 40x reminder — 6 times daily at 06:00, 08:00, 13:00, 17:00, 19:00, 21:00 WIB (UTC+7)
+  const bismillahJob = cron.schedule('0 23,1,6,10,12,14 * * *', () => {
     if (!CHAT_ID) return;
     const now = new Date();
     if (now > END_DATE) return;
@@ -99,5 +99,5 @@ if (TEST_MODE) {
   console.log(`End date: ${END_DATE.toISOString()}`);
   console.log(`Chat ID: ${CHAT_ID || '(not set — send /start to bot)'}`);
   console.log('Sending reminders every 30 minutes.');
-  console.log('Bismillah 40x reminders at 08:00, 13:00, 17:00, 19:00, 21:00 WIB.');
+  console.log('Bismillah 40x reminders at 06:00, 08:00, 13:00, 17:00, 19:00, 21:00 WIB.');
 }
