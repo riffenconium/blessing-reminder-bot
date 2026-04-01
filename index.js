@@ -75,7 +75,7 @@ if (TEST_MODE) {
     console.log('No TELEGRAM_CHAT_ID set. Bot is running — send /start to get your chat ID.');
   }
 
-  cronJob = cron.schedule('0 * * * *', () => {
+  cronJob = cron.schedule('0,30 * * * *', () => {
     if (!CHAT_ID) {
       console.log('Skipping: TELEGRAM_CHAT_ID not set.');
       return;
@@ -87,5 +87,5 @@ if (TEST_MODE) {
   console.log(`Messages: ${messages.length}`);
   console.log(`End date: ${END_DATE.toISOString()}`);
   console.log(`Chat ID: ${CHAT_ID || '(not set — send /start to bot)'}`);
-  console.log('Sending reminders every hour on the hour.');
+  console.log('Sending reminders every 30 minutes.');
 }
