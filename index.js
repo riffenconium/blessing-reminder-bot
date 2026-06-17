@@ -7,6 +7,9 @@ const wisdoms = require('./wisdoms.json');
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const TEST_MODE = process.env.TEST === 'true';
+const END_DATE = process.env.END_DATE
+  ? new Date(process.env.END_DATE)
+  : new Date('2026-07-27T17:00:00Z'); // 40 days from 2026-06-17, midnight WIB
 
 if (!BOT_TOKEN) {
   console.error('TELEGRAM_BOT_TOKEN is required');
@@ -54,10 +57,29 @@ async function send(text) {
     console.log('[SEND skipped] No CHAT_ID set');
     return;
   }
+  const now = new Date();
+  if (now > END_DATE) {
+    console.log(`[SKIP] END_DATE reached — no more messages.`);
+    return;
+  }
   try {
     await bot.sendMessage(CHAT_ID, text, { parse_mode: 'HTML' });
   } catch (err) {
     console.error(`[SEND ERROR] ${err.message}`);
+  }
+}
+
+// Check at midnight WIB whether the 40 days are complete
+function checkEndDate() {
+  if (new Date() > END_DATE) {
+    console.log('40 days complete. Sending final message.');
+    if (CHAT_ID) {
+      bot.sendMessage(
+        CHAT_ID,
+        `🌿 <b>40 days complete. Alhamdulillah.</b>\n\nYour journey of remembrance is done — but the dhikr never ends. Keep counting your blessings, keep sending salawat, keep asking for madad. The door is always open.\n\nYa Rabbi, accept it from us. Ameen. 🤲`,
+        { parse_mode: 'HTML' }
+      ).catch(err => console.error('Final message failed:', err.message));
+    }
   }
 }
 
@@ -182,8 +204,11 @@ cron.schedule('30 9 * * *', sendMadad); // 16:30 WIB
 cron.schedule('0 12 * * *', sendMadad); // 19:00 WIB
 cron.schedule('30 13 * * *', sendMadad); // 20:30 WIB
 
-// Reschedule random messages at midnight WIB = 17:00 UTC
-cron.schedule('0 17 * * *', scheduleDailyMessages);
+// Reschedule random messages at midnight WIB = 17:00 UTC; also check end date
+cron.schedule('0 17 * * *', () => {
+  checkEndDate();
+  scheduleDailyMessages();
+});
 
 // /start command
 bot.onText(/\/start/, (msg) => {
@@ -219,6 +244,7 @@ if (TEST_MODE) {
   scheduleDailyMessages();
   console.log('\nBlessing Reminder Bot started!');
   console.log(`Blessing bank: ${blessingFacts.length} messages | Wisdoms: ${wisdoms.length}`);
+  console.log(`End date: ${END_DATE.toISOString()} (40 days)`);
   console.log('Schedule:');
   console.log('  SubhanAllah 40x  — 2x/day, random 09:00–18:00 WIB');
   console.log('  Bismillah 50x    — 2x/day, random 09:00–18:00 WIB');
